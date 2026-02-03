@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .calculadora {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            width: 320px;
+        }
+
+        .pantalla {
+            background: #1a1a1a;
+            color: #fff;
+            font-size: 2.5em;
+            padding: 20px;
+            text-align: right;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        .botones {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 25px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .numero {
+            background: #505050;
+            color: #fff;
+        }
+
+        .numero:hover {
+            background: #606060;
+        }
+
+        .operador {
+            background: #ff9500;
+            color: #fff;
+        }
+
+        .operador:hover {
+            background: #ffb143;
+        }
+
+        .igual {
+            background: #04aa6d;
+            color: #fff;
+            grid-column: span 2;
+        }
+
+        .igual:hover {
+            background: #05c77e;
+        }
+
+        .limpiar {
+            background: #f44336;
+            color: #fff;
+        }
+
+        .limpiar:hover {
+            background: #f6685e;
+        }
+
+        .cero {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculadora">
+        <div class="pantalla" id="pantalla">0</div>
+        <div class="botones">
+            <button class="limpiar" onclick="limpiar()">C</button>
+            <button class="operador" onclick="borrar()">←</button>
+            <button class="operador" onclick="agregarOperador('/')">/</button>
+            
+            <button class="numero" onclick="agregarNumero('7')">7</button>
+            <button class="numero" onclick="agregarNumero('8')">8</button>
+            <button class="numero" onclick="agregarNumero('9')">9</button>
+            <button class="operador" onclick="agregarOperador('*')">×</button>
+            
+            <button class="numero" onclick="agregarNumero('4')">4</button>
+            <button class="numero" onclick="agregarNumero('5')">5</button>
+            <button class="numero" onclick="agregarNumero('6')">6</button>
+            <button class="operador" onclick="agregarOperador('-')">-</button>
+            
+            <button class="numero" onclick="agregarNumero('1')">1</button>
+            <button class="numero" onclick="agregarNumero('2')">2</button>
+            <button class="numero" onclick="agregarNumero('3')">3</button>
+            <button class="operador" onclick="agregarOperador('+')">+</button>
+            
+            <button class="numero cero" onclick="agregarNumero('0')">0</button>
+            <button class="numero" onclick="agregarNumero('.')">.</button>
+            <button class="igual" onclick="calcular()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let pantallaValor = '0';
+        let operadorAnterior = null;
+        let esperandoNuevoNumero = false;
+
+        function actualizarPantalla() {
+            document.getElementById('pantalla').textContent = pantallaValor;
+        }
+
+        function agregarNumero(num) {
+            if (esperandoNuevoNumero) {
+                pantallaValor = num;
+                esperandoNuevoNumero = false;
+            } else {
+                if (num === '.' && pantallaValor.includes('.')) return;
+                pantallaValor = pantallaValor === '0' ? num : pantallaValor + num;
+            }
+            actualizarPantalla();
+        }
+
+        function agregarOperador(op) {
+            if (!esperandoNuevoNumero && operadorAnterior) {
+                calcular();
+            }
+            pantallaValor += ' ' + op + ' ';
+            operadorAnterior = op;
+            esperandoNuevoNumero = false;
+            actualizarPantalla();
+        }
+
+        function calcular() {
+            try {
+                const resultado = eval(pantallaValor.replace('×', '*'));
+                pantallaValor = resultado.toString();
+                operadorAnterior = null;
+                esperandoNuevoNumero = true;
+                actualizarPantalla();
+            } catch (error) {
+                pantallaValor = 'Error';
+                actualizarPantalla();
+                setTimeout(() => {
+                    limpiar();
+                }, 1500);
+            }
+        }
+
+        function limpiar() {
+            pantallaValor = '0';
+            operadorAnterior = null;
+            esperandoNuevoNumero = false;
+            actualizarPantalla();
+        }
+
+        function borrar() {
+            if (pantallaValor.length > 1) {
+                pantallaValor = pantallaValor.slice(0, -1);
+            } else {
+                pantallaValor = '0';
+            }
+            actualizarPantalla();
+        }
+
+        // Soporte para teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key >= '0' && event.key <= '9' || event.key === '.') {
+                agregarNumero(event.key);
+            } else if (event.key === '+' || event.key === '-' || event.key === '*' || event.key === '/') {
+                agregarOperador(event.key);
+            } else if (event.key === 'Enter' || event.key === '=') {
+                calcular();
+            } else if (event.key === 'Escape' || event.key === 'c' || event.key === 'C') {
+                limpiar();
+            } else if (event.key === 'Backspace') {
+                borrar();
+            }
+        });
+    </script>
+</body>
+</html>
