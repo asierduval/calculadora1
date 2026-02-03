@@ -153,4 +153,4 @@ Si encuentras algún problema o tienes sugerencias de mejora, esta guía te ayud
 - [ ] Añadir pin de usuario
 
 # Imagen desde una URL:
-![Imagen microprocesador] (https://www.adslzone.net/app/uploads-adslzone.net/2018/05/mos-6502.jpg)
+![Imagen microprocesador]( https://www.adslzone.net/app/uploads-adslzone.net/2018/05/mos-6502.jpg )
